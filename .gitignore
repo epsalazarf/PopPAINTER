@@ -1,0 +1,18 @@
+# R specific
+.Rhistory
+.RData
+.Rproj.user/
+.Ruserdata
+
+# renv cache
+renv/library/
+renv/staging/
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Large or sensitive data
+*/data/raw/
+*/tests/
+common/
