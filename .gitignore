@@ -3,6 +3,8 @@
 .RData
 .Rproj.user/
 .Ruserdata
+*.Rproj
+.Rbuildignore
 
 # renv cache
 renv/library/
