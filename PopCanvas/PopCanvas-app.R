@@ -65,8 +65,7 @@ refact <- function(x){
 
 # Load PCA files
 deftitle <- tools::file_path_sans_ext(basename(eigfile))
-pca.data <- read.csv(dir(pattern = paste0(deftitle,".e(.*)vec$"))[1],
-                     stringsAsFactors = F, header = T, sep = "\t")
+pca.data <- read_delim(dir(pattern = paste0(deftitle,".e(.*)vec$"))[1], show_col_types = F)
 names(pca.data) <- gsub(names(pca.data), pattern = "IID", replacement = "ID")
 pca.data <- pca.data[,!grepl(".*FID.*", colnames(pca.data))]
 eval <- scan(dir(pattern = paste0(deftitle,".e(.*)val$"))[1])
@@ -80,9 +79,9 @@ pcteval <- unlist(lapply(eval, function(x) {round((x/sum(eval))*100, 2)}))
 names(pcteval) <- colnames(pca.data[PCcols])
 
 # Read popinfo file (.tsv):
-pifile <- file.choose(dirname(eigfile))
+pifile <- file.choose()
 
-popinfo <- read_delim(pifile, show_col_types = F) %>% rename(ID = 1)
+popinfo <- read_delim(pifile) %>% rename(ID = 1)
 
 # Data merging
 pca.data <- merge(pca.data, popinfo, by.x = "ID", sort = F)
@@ -152,7 +151,7 @@ ui <- fluidPage(
     
     # Plotting Area
     mainPanel(width = 9,
-              plotOutput("PCAPlot", width = "1400px", height = "1080px",
+              plotOutput("PCAPlot", width = "1280px", height = "1024px",
                          dblclick = "dclk",
                          brush = brushOpts(id = "brsh", resetOnNew = TRUE)))
   ),
@@ -246,8 +245,8 @@ server <- function(input, output) {
            aes_string(x = PCaCol(), y = PCbCol(),
                       color = "plotColors")) +
       theme_light() +
-      geom_hline(yintercept = 0, color = "#AAAAAA") +
-      geom_vline(xintercept = 0, color = "#AAAAAA") +
+      geom_hline(yintercept = 0, color = "#CCCCCC") +
+      geom_vline(xintercept = 0, color = "#CCCCCC") +
       # POINTS
       {if (input$type == 1) geom_point(size = 3, alpha = 0.6) } +
       # ID
@@ -290,7 +289,10 @@ server <- function(input, output) {
       {if (!input$legon) theme(legend.position = "none") } +
       ggtitle(ifelse(input$plottitle == "", deftitle, input$plottitle)) +
       theme(plot.title = element_text(lineheight = 0.8, face = "bold", hjust = 0.5),
-            plot.caption = element_text(hjust = 0)) +
+            plot.caption = element_text(hjust = 0),
+            panel.grid.minor = element_blank()) +
+      scale_x_continuous(breaks = breaks_width(width = 0.01)) +
+      scale_y_continuous(breaks = breaks_width(width = 0.01)) +
       labs(x = pct.PCa(), y = pct.PCb(), caption = input$plotcaption) +
       {if (input$flx) scale_x_reverse()} +
       {if (input$fly) scale_y_reverse()} +
@@ -304,7 +306,8 @@ server <- function(input, output) {
   output$dlPlotpdf <- downloadHandler(
     filename = function() { paste0(deftitle,".pc", input$PCa,"x", input$PCb,".pdf")},
     content = function(file) {
-      ggsave(file, plot = pca.plot(), device = "pdf", width = 297, height = 210, units = "mm", dpi = 300)
+      ggsave(file, plot = pca.plot(), device = "pdf", 
+             width = 297, height = 210, units = "mm", dpi = 300, scale = 1.2)
     }
   )
   
@@ -312,7 +315,7 @@ server <- function(input, output) {
     filename = function() { paste0(deftitle,".pc", input$PCa,"x", input$PCb,".png")},
     content = function(file) {
       ggsave(file, plot = pca.plot(), device = "png",
-             width = 297, height = 210, units = "mm", dpi = 300)
+             width = 297, height = 210, units = "mm", dpi = 300, scale = 1.2)
     }
   )
   

@@ -32,6 +32,7 @@ This Shiny application provides an interactive visualization tool for PCA result
 ### Prerequisites
 
 - Ensure you have **R** and **RStudio** installed.
+
 - Install the following R libraries:  
   
   ```R
@@ -51,7 +52,9 @@ This Shiny application provides an interactive visualization tool for PCA result
    ```R
    shiny::runApp("path/to/app.R")
    ```
+
 2. Upon running the app, the interface will prompt you to select the `.eigenvec` file and the `popinfo.txt` file.
+
 3. Once the files are loaded, the interactive PCA plot will be displayed.
 
 ## File Formatting Guidelines
@@ -68,7 +71,9 @@ This Shiny application provides an interactive visualization tool for PCA result
 - **Popinfo File (`popinfo.txt`)**:
   
   - The first column should match the sample IDs (`IID`) from the `.eigenvec` file.
+  
   - Include relevant metadata such as population, region, or custom labels.
+  
   - Example:
     
     ```
