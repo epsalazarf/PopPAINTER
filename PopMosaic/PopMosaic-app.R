@@ -1,8 +1,8 @@
-# AUTO ADMIXTURE PLOTTER (Shiny) v4.0 beta
+ # AUTO ADMIXTURE PLOTTER (Shiny) v4.1 beta
 # Shiny: app.R
 # Author: Pavel Salazar-Fernandez (epsalazarf@gmail.com)
 # Version Upgrade (R 4.0+): March 20 2025
-# Latest Update: August 18 2025
+# Latest Update: September 29 2025
 
 # Requirements:
 # - R library: shinyjs, ggplot2, tidyverse
@@ -59,6 +59,7 @@ ui <- fluidPage(
       # POPINFO Options: factor and groups selection (rendered only if POPINFO is valid)
       uiOutput("factormenu"),
       uiOutput("groupsmenu"),
+      uiOutput("popfactmenu"),
       hr(),
       # Plot Options
       checkboxInput("brdr", label = "Add Borders", value = FALSE),
@@ -78,7 +79,9 @@ ui <- fluidPage(
         tabPanel("Confusion Matrix", 
                  plotOutput("ConfusionPlot", height = "480px", width = "60%")),
         tabPanel("K Donut Plot", 
-                 plotOutput("KDonutPlot", height = "480px", width = "100%"))
+                 plotOutput("KDonutPlot", height = "480px", width = "100%")),
+        tabPanel("Data Table", 
+                 DT::DTOutput("Ktable"))
       )
     )
   ),
@@ -185,6 +188,11 @@ server <- function(input, output, session) {
     selectizeInput("grps", label = "Select Group(s)",
                    choices = groups, multiple = TRUE,
                    options = list(placeholder = 'Choose factor value(s)'))
+  })
+  
+  output$popfactmenu <- renderUI({
+    req(popinfo(), input$fctr)
+    checkboxInput("popfactor", label = "POP as second factor", value = FALSE)
   })
   
   # Dynamic color inputs generated based on the number of clusters.
@@ -327,7 +335,10 @@ server <- function(input, output, session) {
     if (input$autogrp == 1) {
       p <- p + facet_grid(~ KGroup, scales = 'free', space = 'free')
     } else if (input$autogrp == 2 && !is.null(popinfo()) && !is.null(input$fctr)) {
-      p <- p + facet_grid(as.formula(paste("~", input$fctr)), scales = 'free', space = 'free')
+      p <- p + facet_grid(
+        as.formula(paste("~", input$fctr, ifelse(input$popfactor, "+ POP", ""))), 
+        scales = 'free', 
+        space = 'free')
     }
     
     if (input$xlabs) {
@@ -370,6 +381,15 @@ server <- function(input, output, session) {
       labs(y = input$plottitle, x = NULL) +
       theme(legend.position = "none", axis.text.x = element_blank(), axis.text.y = element_blank())
   })
+  
+  output$Ktable <- DT::renderDT({
+    pivot_wider(plotdata(), names_from = K, values_from = Percent) %>%
+      filter( Flag == 1) %>%
+      select(-ID, -Flag, -KProbability) %>%
+      relocate(KGroup, .after = last_col())},
+    filter = "top",
+    options = list(pageLength = 25)
+  )
 }
 
 shinyApp(ui = ui, server = server)
