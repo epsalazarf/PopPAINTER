@@ -1,4 +1,4 @@
- # AUTO ADMIXTURE PLOTTER (Shiny) v4.1 beta
+# AUTO ADMIXTURE PLOTTER (Shiny) v4.1 beta
 # Shiny: app.R
 # Author: Pavel Salazar-Fernandez (epsalazarf@gmail.com)
 # Version Upgrade (R 4.0+): March 20 2025
@@ -39,7 +39,7 @@ suppressPackageStartupMessages({
 ui <- fluidPage(
   useShinyjs(),
   titlePanel("PopMosaic ❧ ADMX"),
-  helpText("ADMIXTURE Plotter - v1.0"),
+  helpText("ADMIXTURE Plotter - v1.2"),
   hr(),
   sidebarLayout(
     sidebarPanel(
@@ -387,8 +387,16 @@ server <- function(input, output, session) {
       filter( Flag == 1) %>%
       select(-ID, -Flag, -KProbability) %>%
       relocate(KGroup, .after = last_col())},
+    rownames = ifelse(is.null(popinfo()),TRUE,FALSE),
     filter = "top",
-    options = list(pageLength = 25)
+    extensions = 'Buttons', 
+    options = list(pageLength = 25,
+                   lengthMenu = c(25,50,100),
+                   paging = TRUE,
+                   scrollX=TRUE,
+                   dom = 'l<"sep">Bfrtip',
+                   buttons = c('copy', 'csv', 'excel', 'pdf')),
+    server = FALSE
   )
 }
 
