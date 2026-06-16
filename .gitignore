@@ -18,3 +18,25 @@ Thumbs.db
 */data/raw/
 */tests/
 common/
+.Rproj.user
+
+# Genomics binaries — safe to ignore (none currently tracked)
+*.bed
+*.bim
+*.fam
+*.vcf
+*.vcf.gz
+*.bam
+*.bai
+
+# PCA / ADMIXTURE outputs — ignore, but keep the bundled demo data
+*.evec
+*.eval
+*.eigenvec
+*.eigenval
+*.Q
+!*/demo/**
+
+# Ambiguous (may hold sample metadata) — review per-file before committing.
+# NOT auto-ignored because the demo popinfo is .tsv and must stay tracked:
+#   *.txt  *.tsv  *.csv

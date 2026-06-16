@@ -4,3 +4,4 @@ Version: 0.1.0
 Authors@R: person('Pavel Salazar-Fernandez', email='epsalazarf@gmail.com', role=c('aut', 'cre'))
 Description: Interactive R Shiny app for population genomics visualization (PCA).
 License: MIT
+Imports: shiny, tidyverse, scales

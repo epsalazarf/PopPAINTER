@@ -151,7 +151,7 @@ ui <- fluidPage(
     
     # Plotting Area
     mainPanel(width = 9,
-              plotOutput("PCAPlot", width = "1280px", height = "1024px",
+              plotOutput("PCAPlot", width = "1080px", height = "940px",
                          dblclick = "dclk",
                          brush = brushOpts(id = "brsh", resetOnNew = TRUE)))
   ),

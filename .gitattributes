@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Prevent GitHub Linguist from misdetecting ADMIXTURE .Q output as HiveQL
+*.Q linguist-detectable=false

@@ -50,7 +50,7 @@ This Shiny application provides an interactive visualization tool for PCA result
 1. Run the Shiny app from RStudio using the following command:
    
    ```R
-   shiny::runApp("path/to/app.R")
+   shiny::runApp("path/to/PopCanvas-app.R")
    ```
 
 2. Upon running the app, the interface will prompt you to select the `.eigenvec` file and the `popinfo.txt` file.

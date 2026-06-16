@@ -29,7 +29,7 @@ They are intended for research workflows where quick, high-quality data visualiz
 
 - **RStudio** (recommended)
 
-- Packages: `shiny`, `shinyjs`, `ggplot2`, `dplyr`, `plotly`, and others (listed in each app’s DESCRIPTION).
+- Packages: `shiny`, `shinyjs`, `tidyverse`, `scales`, `RColorBrewer`, `pheatmap`, `colourpicker` (full per-app lists in each app’s `DESCRIPTION` and `README`).
 
 - Input files depend on the app (see below).
 
@@ -111,14 +111,14 @@ PopPAINTER apps rely on `popinfo` for added functions like grouping, coloring, a
 
 From RStudio:
 
-1. Open the `app.R` file in the relevant app directory (`PopCanvas` or `PopMosaic`).
+1. Open the app file in the relevant directory — `PopCanvas/PopCanvas-app.R` or `PopMosaic/PopMosaic-app.R`.
 
 2. Click **Run App**.
 
 From R console:
 
 ```r
-shiny::runApp("path/to/PopCanvas")
+shiny::runApp("PopCanvas/PopCanvas-app.R")   # or PopMosaic/PopMosaic-app.R
 ```
 
 ## Repository Structure
@@ -127,7 +127,6 @@ shiny::runApp("path/to/PopCanvas")
 PopPAINTER/
 ├── PopCanvas/      # PCA visualizer app
 ├── PopMosaic/      # ADMIXTURE visualizer app
-├── common/         # Shared code, themes, data
 ├── README.md
 └── .gitignore
 ```

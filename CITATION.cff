@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "PopPAINTER: Interactive Shiny Apps for Population Genomics"
+authors:
+  - family-names: Salazar-Fernández
+    given-names: Edgar Pavel
+    orcid: "https://orcid.org/0000-0001-7870-7805"
+    email: epsalazarf@gmail.com
+year: 2026
+url: "https://github.com/epsalazarf/PopPAINTER"
+license: CC-BY-4.0
