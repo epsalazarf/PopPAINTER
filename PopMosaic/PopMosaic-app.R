@@ -1,8 +1,8 @@
-# AUTO ADMIXTURE PLOTTER (Shiny) v4.1 beta
+# AUTO ADMIXTURE PLOTTER (Shiny) v1.42 beta
 # Shiny: app.R
 # Author: Pavel Salazar-Fernandez (epsalazarf@gmail.com)
 # Version Upgrade (R 4.0+): March 20 2025
-# Latest Update: September 29 2025
+# Latest Update: August 29 2026
 
 # Requirements:
 # - R library: shinyjs, ggplot2, tidyverse
@@ -27,19 +27,23 @@
 suppressPackageStartupMessages({
   library(shiny)
   library(shinyjs)
-  library(tidyverse)
+  library(dplyr)
+  library(ggplot2)
   library(RColorBrewer)
   library(pheatmap)
   library(grid)
   library(colourpicker)
+  library(markdown)
 })
+
+
 
 # UI ------------------------------------------------------------------------
 
 ui <- fluidPage(
   useShinyjs(),
   titlePanel("PopMosaic ❧ ADMX"),
-  helpText("ADMIXTURE Plotter - v1.2"),
+  helpText("ADMIXTURE Plotter - v1.42 [Aug 2026]"),
   hr(),
   sidebarLayout(
     sidebarPanel(
@@ -81,11 +85,13 @@ ui <- fluidPage(
         tabPanel("K Donut Plot", 
                  plotOutput("KDonutPlot", height = "480px", width = "100%")),
         tabPanel("Data Table", 
-                 DT::DTOutput("Ktable"))
+                 DT::DTOutput("Ktable")),
+        tabPanel("Instructions",
+                 includeMarkdown("README.md"))
       )
     )
   ),
-  helpText("Developed by: Pavel Salazar-Fernandez")
+  helpText("PopPAINTER ❦ Population genomics visualization suite")
 )
 
 # SERVER --------------------------------------------------------------------
@@ -227,7 +233,7 @@ server <- function(input, output, session) {
       data <- cbind(data, popinfo())
       
       # Define candidate column names for sample IDs.
-      candidates <- c("Sample", "SampleID", "SID", "IID")
+      candidates <- c("ID", "IID", "SID", "Sample", "SampleID")
       # Check which candidates are present in the popinfo data.
       present <- candidates[candidates %in% colnames(popinfo())]
       
@@ -398,6 +404,8 @@ server <- function(input, output, session) {
                    buttons = c('copy', 'csv', 'excel', 'pdf')),
     server = FALSE
   )
+  
+  output$Instructions <- renderText("Hello world")
 }
 
 shinyApp(ui = ui, server = server)

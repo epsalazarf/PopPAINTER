@@ -90,8 +90,7 @@ group_fields <- function(df) {
 }
 
 # Metadata columns worth showing in hover text / selection info.
-META_PREF <- c("ID", "POP", "POPULATION", "POP_SIMPLE", "SEX",
-               "MLABEL", "SLABEL", "COUNTRY", "SUPERPOP", "CONTINENT")
+META_PREF <- c("ID", "POP", "POPULATION", "SEX", "META", "SUPER", "COUNTRY", "CONTINENT")
 
 # <\PREPARATIONS> -------------------------------------------------------------
 
