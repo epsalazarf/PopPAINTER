@@ -1,0 +1,13 @@
+name: PopMosaic
+title: PopMosaic
+username: epsalazarf
+account: epsalazarf
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 17700590
+bundleId: 12407637
+url: https://epsalazarf.shinyapps.io/PopMosaic/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rbuildignore|demo/demo.1kgp.k8.Q|demo/demo.1kgp.popinfo.tsv|DESCRIPTION|PopMosaic-app-v2.0.R|README.md|tests/PopMosaic-test.R|tests/Ternary Plot.R

@@ -95,13 +95,13 @@ A `popinfo` file links sample IDs to population and metadata categories.
   
   - `POP_SIMPLE` — human-readable population name.
   
-  - `REGION` — grouping of populations for broader categories.
+  - `METAPOP` — grouping of populations for broader categories.
 
 PopPAINTER apps rely on `popinfo` for added functions like grouping, coloring, and filtering. Ensure the file matches your dataset and contains only relevant samples.
 
 **Format:**
 
-- Tab- or space-delimited TXT file.
+- Tab- or space-delimited TXT/TSV file.
 
 - First row contains column headers.
 
@@ -131,12 +131,12 @@ PopPAINTER/
 └── .gitignore
 ```
 
-- `main` branch — beta releases for internal use.
+- `main` branch — beta releases for public use.
 
-- `dev` branch — active development and new features.
+- `dev` branch — internal experimental development with new features.
 
-## License
+## License & Citation
 
-This software is completely free to use, but credits to this repo is very well appreciated.
+This software is completely free to use, but citation to this repo is very well appreciated.
 
-
+> _Salazar-Fernandez, E. P. (2026). PopPAINTER: Population genomics visualization suite (Version 1.2.0-beta) [Computer software]. GitHub. https://github.com/epsalazarf/PopPAINTER_

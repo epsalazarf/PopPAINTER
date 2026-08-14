@@ -1,8 +1,8 @@
-# AUTO PCA PLOTTER (Shiny) v2.0
+# AUTO PCA PLOTTER (Shiny) v1.3
 # Shiny: app.R
 # Author: Pavel Salazar-Fernandez (epsalazarf@gmail.com)
 # Version Upgrade (R 4.0+): September 12 2022
-# Lastest Update: August 18 2025
+# Lastest Update: August 18 2026
 
 # Requirements:
 # - EVAL and EVEC files from the PLINK PCA.
@@ -30,11 +30,15 @@ message("> Starting: PCA Visualizer dashboard...")
 # Load required libraries
 suppressPackageStartupMessages({
   require(shiny)
-  library(tidyverse)
+  library(dplyr)
+  library(ggplot2)
   library(scales)
+  library(markdown)
 })
 
 #<INPUT> ####
+app_dir <- getwd()
+
 # Choose Eig* file
 eigfile <- file.choose()
 setwd(dirname(eigfile))
@@ -81,7 +85,13 @@ names(pcteval) <- colnames(pca.data[PCcols])
 # Read popinfo file (.tsv):
 pifile <- file.choose()
 
-popinfo <- read_delim(pifile) %>% rename(ID = 1)
+popinfo <- read_delim(pifile, )
+id_candidates <- c("ID", "IID", "SID", "Sample", "SampleID")
+id_present <- id_candidates[id_candidates %in% colnames(popinfo)]
+if (length(id_present) > 0) {
+  #data <- data %>% mutate(ID = .data[[id_present[1]]])
+  popinfo <- popinfo %>% rename(ID = any_of(id_present[1]))
+}
 
 # Data merging
 pca.data <- merge(pca.data, popinfo, by.x = "ID", sort = F)
@@ -96,7 +106,7 @@ pops <- as.character(unique(pca.data$POP))
 slabels <- as.character(unique(pca.data$SLABEL))
 uniquecols <- sapply(pca.data,function(x) length(unique(x)))
 fields <- names(uniquecols[uniquecols > 1])[-(IDcol:(IDcol + ncomps))]
-if ("POP_simplex" %in% colnames(pca.data)) {
+if ("POP_simple" %in% colnames(pca.data)) {
   names(pops) <- unique(paste0(pca.data$POP," (",pca.data$POPULATION,")"))
 }
 
@@ -107,7 +117,7 @@ ui <- fluidPage(
   # Page Title
   #img(src = "logo480x.jpg", height = "100px", style = "float:right"),
   titlePanel("PopCanvas ❧ PCA"),
-  helpText("PCA Plotter - v1.0"),
+  helpText("PCA Plotter - v1.3 [Aug 2026]"),
   hr(),
   # Sidebar
   sidebarLayout(
@@ -151,12 +161,19 @@ ui <- fluidPage(
     
     # Plotting Area
     mainPanel(width = 9,
-              plotOutput("PCAPlot", width = "1080px", height = "940px",
-                         dblclick = "dclk",
-                         brush = brushOpts(id = "brsh", resetOnNew = TRUE)))
+              tabsetPanel(type = "tabs",
+                          tabPanel("Plot", plotOutput("PCAPlot", 
+                            width = "1080px", height = "940px", dblclick = "dclk",
+                            brush = brushOpts(id = "brsh", resetOnNew = TRUE))),
+                          tabPanel("Data Table", 
+                            DT::DTOutput("Ktable")),
+                          tabPanel("Instructions", 
+                            includeMarkdown(paste0(app_dir,"/README.md")))
+                          )
+              )
   ),
-  helpText("Developed by: Pavel Salazar-Fernandez")
-)
+  helpText("PopPAINTER ❦ Population genomics visualization suite")
+) 
 #</UI>
 
 #<SERVER> ####
@@ -174,6 +191,15 @@ server <- function(input, output) {
   pct.PCb <- reactive(paste0(PCbCol(),
                              " (",percent(eval[input$PCb]/sum(eval)),")"))
   ranges <- reactiveValues(x = NULL, y = NULL)
+  
+  # Popinfo
+  popinfo_rx <- reactive({
+    if (is.null(input$pifile)) return(NULL)
+    pi <- read_delim(input$pifile$datapath, show_col_types = FALSE, trim_ws = TRUE)
+    names(pi)[1] <- "ID"
+    pi$ID <- as.character(pi$ID)
+    pi
+  })
   
   #</REACTIVES>
   
