@@ -1,8 +1,8 @@
-# AUTO ADMIXTURE PLOTTER (Shiny) v1.42 beta
+# AUTO ADMIXTURE PLOTTER (Shiny) v1.43
 # Shiny: app.R
 # Author: Pavel Salazar-Fernandez (epsalazarf@gmail.com)
 # Version Upgrade (R 4.0+): March 20 2025
-# Latest Update: August 29 2026
+# Latest Update: August 20 2026
 
 # Requirements:
 # - R library: shinyjs, ggplot2, tidyverse
@@ -11,7 +11,7 @@
 
 # Pipeline:
 # 1. Reads Q table file.
-# 2. Generates plot.
+# 2. Generates an interactive plot.
 # 3. Optional: load POPINFO file for labeling and resorting.
 
 # Features:
@@ -28,6 +28,9 @@ suppressPackageStartupMessages({
   library(shiny)
   library(shinyjs)
   library(dplyr)
+  library(readr)
+  library(tidyr)
+  library(tibble)
   library(ggplot2)
   library(RColorBrewer)
   library(pheatmap)
@@ -36,6 +39,11 @@ suppressPackageStartupMessages({
   library(markdown)
 })
 
+default_palette <- c("#e60049", "#0bb4ff", "#50e991", "#e6d800",
+                     "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff",
+                     "#00bfa0", "#7c1158", "#fd7f6f", "#b2e061",
+                     "#bd7ebe", "#ffee65", "#fdcce5", "#beb9db")
+
 
 
 # UI ------------------------------------------------------------------------
@@ -43,16 +51,20 @@ suppressPackageStartupMessages({
 ui <- fluidPage(
   useShinyjs(),
   titlePanel("PopMosaic ❧ ADMX"),
-  helpText("ADMIXTURE Plotter - v1.42 [Aug 2026]"),
+  helpText("ADMIXTURE Plotter - v1.43 [Aug 2026]"),
   hr(),
   sidebarLayout(
     sidebarPanel(
       width = 2,
       # Upload Q files (multiple) and optional POPINFO file
-      fileInput("qfiles", "Upload Q files:", 
+      fileInput("qfiles", "Upload Q files:",
                 multiple = TRUE, accept = c(".Q", "text/plain")),
       fileInput("pifile", "Upload POPINFO file (optional):",
                 multiple = FALSE, accept = c(".csv", ".tsv", ".txt")),
+      conditionalPanel(
+        condition = "!output.AdmixPlot",
+        actionButton("loadDemo", "Load Demo Data")
+      ),
       # Warning message for POPINFO file row mismatch
       uiOutput("popinfo_warning"),
       hr(),
@@ -97,11 +109,33 @@ ui <- fluidPage(
 # SERVER --------------------------------------------------------------------
 
 server <- function(input, output, session) {
-  
+
+  # Single source of truth for file inputs — fed either by real uploads or
+  # by the demo button, so the rest of the reactive chain doesn't care where
+  # the data came from.
+  dataSrc <- reactiveValues(qdf = NULL, pipath = NULL)
+
+  observeEvent(input$qfiles, {
+    dataSrc$qdf <- input$qfiles
+  })
+
+  observeEvent(input$pifile, {
+    dataSrc$pipath <- input$pifile$datapath
+  })
+
+  observeEvent(input$loadDemo, {
+    dataSrc$qdf <- data.frame(
+      name = "demo.1kgp.k8.Q",
+      datapath = "demo/demo.1kgp.k8.Q",
+      stringsAsFactors = FALSE
+    )
+    dataSrc$pipath <- "demo/demo.1kgp.popinfo.tsv"
+  })
+
   # Reactive: Process uploaded Q files and generate a list for selection.
   qfiles_list <- reactive({
-    req(input$qfiles)
-    df <- input$qfiles
+    req(dataSrc$qdf)
+    df <- dataSrc$qdf
     # Derive default title from the first file assuming pattern: <title>.<K#>.Q
     defaultTitle <- gsub("[0-9]+\\.Q$", "", df$name[1])
     if (input$plottitle == "") {
@@ -156,17 +190,17 @@ server <- function(input, output, session) {
   
   # Read POPINFO file if provided.
   popinfo <- reactive({
-    if (is.null(input$pifile)) return(NULL)
+    if (is.null(dataSrc$pipath)) return(NULL)
     tryCatch({
-      read_tsv(input$pifile$datapath)
+      read_tsv(dataSrc$pipath)
     }, error = function(e) {
       validate(need(FALSE, "Error reading POPINFO file."))
     })
   })
-  
+
   # Display a warning if POPINFO row count does not match Q data.
   output$popinfo_warning <- renderUI({
-    req(input$pifile, qData(), popinfo())
+    req(dataSrc$pipath, qData(), popinfo())
     if(nrow(qData()) != nrow(popinfo())) {
       span(style = "color:red; font-size:small;", "Error: sample row numbers differ")
     }
@@ -205,12 +239,8 @@ server <- function(input, output, session) {
   output$colorInputs <- renderUI({
     req(nK())
     n <- nK()
-    default_palette <- c("#e60049", "#0bb4ff", "#50e991", "#e6d800",
-                         "#9b19f5", "#ffa300", "#dc0ab4", "#b3d4ff",
-                         "#00bfa0", "#7c1158", "#fd7f6f", "#b2e061",
-                         "#bd7ebe", "#ffee65", "#fdcce5", "#beb9db")
     inputs <- lapply(seq_len(n), function(i) {
-      colourInput(inputId = paste0("col", i),
+      colourpicker::colourInput(inputId = paste0("col", i),
                   label = paste("Color", i, ":"),
                   value = if(i <= length(default_palette)) default_palette[i] else "#000000",
                   palette = "square")
@@ -218,10 +248,20 @@ server <- function(input, output, session) {
     do.call(tagList, inputs)
   })
   
-  # Assemble bar colors from dynamic inputs.
+  # Assemble bar colors from dynamic inputs. Falls back to the default
+  # palette for any colourInput whose value hasn't reached the server yet
+  # (the widgets are created dynamically and their initial value takes one
+  # extra reactive tick to round-trip from the client).
   barcolors <- reactive({
     req(nK())
-    sapply(seq_len(nK()), function(i) input[[paste0("col", i)]])
+    sapply(seq_len(nK()), function(i) {
+      val <- input[[paste0("col", i)]]
+      if (is.null(val)) {
+        if (i <= length(default_palette)) default_palette[i] else "#000000"
+      } else {
+        val
+      }
+    })
   })
   
   # Process Q data: merge with POPINFO only if valid; otherwise, skip merging.
@@ -405,7 +445,13 @@ server <- function(input, output, session) {
     server = FALSE
   )
   
-  output$Instructions <- renderText("Hello world")
 }
 
+#</SERVER>
+
+#<APP> ####
 shinyApp(ui = ui, server = server)
+#</APP>
+
+
+#<END> ####

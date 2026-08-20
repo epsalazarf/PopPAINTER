@@ -1,0 +1,13 @@
+name: PopCanvas
+title: PopCanvas
+username: epsalazarf
+account: epsalazarf
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 17712843
+bundleId: 12441431
+url: https://epsalazarf.shinyapps.io/PopCanvas/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .Rbuildignore|DESCRIPTION|PopCanvas-app-v2.0.R|tests/PopCanvas-app_og.R
