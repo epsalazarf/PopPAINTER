@@ -1,8 +1,8 @@
-# AUTO PCA PLOTTER (Shiny) v1.3
+# AUTO PCA PLOTTER (Shiny) v1.4
 # Shiny: app.R
 # Author: Pavel Salazar-Fernandez (epsalazarf@gmail.com)
 # Version Upgrade (R 4.0+): September 12 2022
-# Lastest Update: August 18 2026
+# Latest Update: August 19 2026
 
 # Requirements:
 # - EVAL and EVEC files from the PLINK PCA.
@@ -10,8 +10,8 @@
 
 # Pipeline:
 # 1. Reads .eigenvec and .eigenval files from a chosen directory.
-# 2. Identifies names, regions and populations from a given popinfo.tsv/txt
-# 3. Generates a color-coded PCA plot.
+# 2. Identifies names, regions and populations from a given popinfo.
+# 3. Generates an interactive color-coded PCA plot.
 
 # Features:
 # - Plot types: Can select between points or tags for the plot.
@@ -20,8 +20,7 @@
 # - Color by Category: User can choose the criteria for coloring using the
 #   popinfo.
 # - Auto-Legend: Shows color coding for the selected category.
-# - Interactive Zoom: select an area and double click to zoom in, double click
-#   again to zoom out.
+# - Interactive Zoom: select an area and double click to zoom in, double click again to zoom out.
 
 #<START> ####
 message("> Starting: PCA Visualizer dashboard...")
@@ -354,9 +353,7 @@ server <- function(input, output, session) {
       labs(x = pct.PCa(), y = pct.PCb(), caption = input$plotcaption) +
       {if (input$flx) scale_x_reverse()} +
       {if (input$fly) scale_y_reverse()} +
-      coord_cartesian(xlim = ranges$x, ylim = ranges$y, expand = T) #+
-    #{if (input$ash) scale_x_continuous(transform = "asinh", guide = "axis_logticks")} +
-    #{if (input$ash) scale_y_continuous(transform = "asinh", guide = "axis_logticks")}
+      coord_cartesian(xlim = ranges$x, ylim = ranges$y, expand = T)
   })
   
   output$PCAPlot <- renderPlot({ pca.plot() })
@@ -414,6 +411,5 @@ server <- function(input, output, session) {
 shinyApp(ui = ui, server = server)
 #</APP>
 
-#<SANDBOX> ####
 
 #<END> ####

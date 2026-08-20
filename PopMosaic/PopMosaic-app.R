@@ -1,8 +1,8 @@
-# AUTO ADMIXTURE PLOTTER (Shiny) v1.42 beta
+# AUTO ADMIXTURE PLOTTER (Shiny) v1.43
 # Shiny: app.R
 # Author: Pavel Salazar-Fernandez (epsalazarf@gmail.com)
 # Version Upgrade (R 4.0+): March 20 2025
-# Latest Update: August 29 2026
+# Latest Update: August 19 2026
 
 # Requirements:
 # - R library: shinyjs, ggplot2, tidyverse
@@ -11,7 +11,7 @@
 
 # Pipeline:
 # 1. Reads Q table file.
-# 2. Generates plot.
+# 2. Generates an interactive plot.
 # 3. Optional: load POPINFO file for labeling and resorting.
 
 # Features:
@@ -405,7 +405,13 @@ server <- function(input, output, session) {
     server = FALSE
   )
   
-  output$Instructions <- renderText("Hello world")
 }
 
+#</SERVER>
+
+#<APP> ####
 shinyApp(ui = ui, server = server)
+#</APP>
+
+
+#<END> ####

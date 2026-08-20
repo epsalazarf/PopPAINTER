@@ -1,6 +1,6 @@
 # PopMosaic: ADMIXTURE Plotter (R Shiny)
 
-_Current Version: v1.42 [August 2026]_
+_Current Version: v1.43 [August 2026]_
 
 _Part of the [PopPAINTER](https://github.com/epsalazarf/PopPAINTER) suite._
 
@@ -56,17 +56,17 @@ A `popinfo` is a metadata file links sample IDs to population and metadata categ
 
 - **Recommended columns:**
   
-  - `POP_SIMPLE` — human-readable population name.
+  - `POPULATION` — human-readable population name.
   
-  - `METAPOP` — grouping of populations for broader categories
+  - `META` — grouping of populations for broader categories
 
 - Example:
   
   ```
-  ID       POP      POPULATION
-  HG00119  GBR      Europe
-  HG00120  GBR      Europe
-  HG00275  CHB      East Asia
+  ID       POP      POPULATION    META
+  HG00119  GBR      British       Europe
+  HG00120  GBR      British       Europe
+  HG00275  CHB      Han Chinese   East Asia
   ```
 
 > **NOTE:** Since Q files have no IDs to match, you are required to upload a popinfo file with _exactly the same row numbers as the samples used in the analysis_ (excluding header) and make sure samples are in the same order as the input file to prevent mislabeling.
@@ -133,4 +133,4 @@ For issues, suggestions, or contributions, feel free to reach me at [epsalazarf@
 
 ### Citation
 
-> *Salazar-Fernandez, E. P. (2026). PopPAINTER: Population genomics visualization suite (Version 1.2.0-beta) [Computer software]. GitHub. https://github.com/epsalazarf/PopPAINTER*
+> *Salazar-Fernandez, E. P. (2026). PopPAINTER: Population genomics visualization suite (Version 1.4.0-beta) [Computer software]. GitHub. https://github.com/epsalazarf/PopPAINTER*

@@ -1,6 +1,6 @@
 # PopCanvas: Popgen PCA Plotter (R Shiny)
 
-_Current Major Version: v1.3 [August 2026]._ 
+_Current Major Version: v1.4 [August 2026]._ 
 
 _Part of the [PopPAINTER](https://github.com/epsalazarf/PopPAINTER) suite._
 
@@ -28,9 +28,9 @@ If you cloned the repo to your local machine, you can either:
    shiny::runApp("PopPAINTER/PopCanvas/PopCanvas-app.R")
    ```
 
-2. Upon running the app, the interface will prompt you to select the `.eigenvec` file and the `popinfo.txt` file.
+2. After the app starts, the side panel interface allows you to upload a `.eigenvec/.eigenval` file pair and the `popinfo.txt` file. *All three files are required*.
 
-3. Once the files are loaded, the interactive PCA plot will be displayed.
+3. Once the files are loaded and validated, the interactive PCA plot will be displayed.
 
 ## Features
 
@@ -43,7 +43,7 @@ If you cloned the repo to your local machine, you can either:
 ### Input Files
 
 - **PCA Result files**: `.eigenvec` and `.eigenval` files from a PCA run in PLINK v1.9 or similar software.
-- **Popinfo File**: A tab-separated `.txt` file that includes information about population, region, and other labels. The first column must match the IDs in the `.eigenvec` file.
+- **Popinfo File**: A tab-separated `.txt/.tsv` file that includes information about population (`POP` column required) and other labels. The first column must match the sample IDs in the `.eigenvec` file.
 
 #### About the popinfo file
 
@@ -57,20 +57,20 @@ A `popinfo` is a metadata file links sample IDs to population and metadata categ
 
 - **Recommended columns:**
   
-  - `POP_SIMPLE` — human-readable population name.
+  - `POPULATION` — human-readable population name.
   
-  - `METAPOP` — grouping of populations for broader categories
+  - `META` — grouping of populations for broader categories
 
 - Example:
   
   ```
-  ID       POP      POPULATION
-  HG00119  GBR      Europe
-  HG00120  GBR      Europe
-  HG00275  CHB      East Asia
+  ID       POP      POPULATION    META
+  HG00119  GBR      British       Europe
+  HG00120  GBR      British       Europe
+  HG00275  CHB      Han Chinese   East Asia
   ```
 
-> **NOTE:** This app matches the sample IDs, if samples appear to be missing, check that the popinfo file contains the correct names in both files
+> **NOTE:** This app matches the sample IDs. If samples appear to be missing on the plot, check that the popinfo file contains the correct names in both files.
 
 #### File Formatting Guidelines
 
@@ -82,7 +82,7 @@ A `popinfo` is a metadata file links sample IDs to population and metadata categ
   
   - Tab- or space-delimited TXT/TSV files.
   
-  - PLINK 1 `.fam` file: FAMID will be used as POP tag.
+  - PLINK 1 `.fam` file: FAMID can be renamed to be used as POP tag.
   
   - First row contains column headers.
   
@@ -126,12 +126,16 @@ Load these files when prompted during app startup to view a sample PCA plot.
 - Click the sidepanel button **Save as PNG/PDF** to download the plot as a PNG/PDF file respectively. Note that rendering may change the exported file appearance.
 - Alternatively, you can also right click the plot image in app to download it as a PNG. What you see is what. you get.
 
+### Data Table
+
+- Click on the tab to visualize the merged PCA/metadata input table. Use the controls on the top to search, sort or filter through the sample table. Any filter applied in this tab has no effect on the plot.
+
 ## Troubleshooting
 
-- Ensure that the `popinfo` file's first column matches the IDs in the `.eigenvec` file.
+- Ensure that the `popinfo` file's first column matches exactly the IDs in the `.eigenvec` file.
 - Check for missing or incorrectly formatted data in the input files.
 - If the app fails to run, make sure all necessary R libraries are installed.
-- If plots fail to render withouth an error message, restart your R/R Studio session.
+- If plots fail to render without an error message, restart your R/R Studio session.
 
 ## Contact
 
@@ -139,4 +143,4 @@ For issues, suggestions, or contributions, feel free to reach me at [epsalazarf@
 
 ### Citation
 
-> *Salazar-Fernandez, E. P. (2026). PopPAINTER: Population genomics visualization suite (Version 1.2.0-beta) [Computer software]. GitHub. https://github.com/epsalazarf/PopPAINTER*
+> *Salazar-Fernandez, E. P. (2026). PopPAINTER: Population genomics visualization suite (Version 1.4.0-beta) [Computer software]. GitHub. https://github.com/epsalazarf/PopPAINTER*
