@@ -2,7 +2,7 @@
 # Shiny: app.R
 # Author: Pavel Salazar-Fernandez (epsalazarf@gmail.com)
 # Version Upgrade (R 4.0+): September 12 2022
-# Latest Update: August 19 2026
+# Latest Update: August 20 2026
 
 # Requirements:
 # - EVAL and EVEC files from the PLINK PCA.
@@ -71,12 +71,15 @@ ui <- fluidPage(
                            accept = c(".eigenvec", ".eigenval", ".evec", ".eval", "text/plain")),
                  fileInput("pifile", "Upload POPINFO file:",
                            multiple = FALSE, accept = c(".csv", ".tsv", ".txt")),
+                 conditionalPanel(
+                   condition = "!output.PCAPlot",
+                   actionButton("loadDemo", "Load Demo Data")
+                 ),
                  hr(),
                  h4("Settings"),
                  textInput("plottitle", label = "Title", value = ""),
                  checkboxInput("flx", label = "Flip x-axis", value = FALSE),
                  checkboxInput("fly", label = "Flip y-axis", value = FALSE),
-                 #checkboxInput("ash", label = "ASINH zoom [TBD]", value = TRUE),
                  radioButtons("type", label = "Type:",
                               choices = list("Points" = 1, "Text" = 2, "Labels" = 3),
                               selected = 1),
@@ -114,27 +117,42 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   #<REACTIVES>
 
-  # Identify the .eigenvec and .eigenval files among the uploaded pair.
-  eigfiles_list <- reactive({
-    req(input$eigfiles)
+  # Single source of truth for file paths — fed either by real uploads or
+  # by the demo button, so the rest of the reactive chain doesn't care where
+  # the data came from.
+  dataSrc <- reactiveValues(vecpath = NULL, valpath = NULL, deftitle = NULL, pipath = NULL)
+
+  observeEvent(input$eigfiles, {
     df <- input$eigfiles
     vec_idx <- grep("\\.e(.*)vec$", df$name, ignore.case = TRUE)
     val_idx <- grep("\\.e(.*)val$", df$name, ignore.case = TRUE)
-    validate(need(length(vec_idx) > 0, "No .eigenvec file found among uploads."))
-    validate(need(length(val_idx) > 0, "No .eigenval file found among uploads."))
-    list(vecpath = df$datapath[vec_idx[1]],
-         valpath = df$datapath[val_idx[1]],
-         deftitle = tools::file_path_sans_ext(basename(df$name[vec_idx[1]])))
+    if (length(vec_idx) == 0 || length(val_idx) == 0) {
+      showNotification("Upload must include both a .eigenvec and a .eigenval file.", type = "error")
+      return()
+    }
+    dataSrc$vecpath  <- df$datapath[vec_idx[1]]
+    dataSrc$valpath  <- df$datapath[val_idx[1]]
+    dataSrc$deftitle <- tools::file_path_sans_ext(basename(df$name[vec_idx[1]]))
+  })
+
+  observeEvent(input$pifile, {
+    dataSrc$pipath <- input$pifile$datapath
+  })
+
+  observeEvent(input$loadDemo, {
+    dataSrc$vecpath  <- "demo/demo.1kgp.eigenvec"
+    dataSrc$valpath  <- "demo/demo.1kgp.eigenval"
+    dataSrc$pipath   <- "demo/demo.1kgp.popinfo.tsv"
+    dataSrc$deftitle <- "demo.1kgp"
   })
 
   # Read the eigenvec/eigenval pair once identified.
   pca_raw <- reactive({
-    req(eigfiles_list())
-    ef <- eigfiles_list()
-    data <- read_delim(ef$vecpath, show_col_types = FALSE)
+    req(dataSrc$vecpath, dataSrc$valpath)
+    data <- read_delim(dataSrc$vecpath, show_col_types = FALSE)
     names(data) <- gsub(names(data), pattern = "IID", replacement = "ID")
     data <- data[,!grepl(".*FID.*", colnames(data))]
-    eval <- scan(ef$valpath)
+    eval <- scan(dataSrc$valpath)
 
     PCcols <- grep("numeric", sapply(data, class))
     ncomps <- table(sapply(data, class))["numeric"]
@@ -145,13 +163,13 @@ server <- function(input, output, session) {
     names(pcteval) <- colnames(data[PCcols])
 
     list(data = data, eval = eval, PCcols = PCcols, ncomps = ncomps,
-         IDcol = IDcol, pcteval = pcteval, deftitle = ef$deftitle)
+         IDcol = IDcol, pcteval = pcteval, deftitle = dataSrc$deftitle)
   })
 
   # Popinfo
   popinfo_rx <- reactive({
-    req(input$pifile)
-    pi <- read_delim(input$pifile$datapath, show_col_types = FALSE, trim_ws = TRUE)
+    req(dataSrc$pipath)
+    pi <- read_delim(dataSrc$pipath, show_col_types = FALSE, trim_ws = TRUE)
     id_candidates <- c("ID", "IID", "SID", "Sample", "SampleID")
     id_present <- id_candidates[id_candidates %in% colnames(pi)]
     if (length(id_present) > 0) {
