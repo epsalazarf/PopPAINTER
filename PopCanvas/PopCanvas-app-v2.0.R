@@ -282,14 +282,20 @@ ui <- dashboardPage(
               tags$p(tags$strong("Popinfo (.tsv / .txt):"),
                      " first column = sample ID (must match ", tags$code("IID"),
                      "); remaining columns = metadata such as ", tags$code("POP"),
-                     ", ", tags$code("POPULATION"), ", ", tags$code("CONTINENT"),
-                     ". An optional ", tags$code("COLOR"),
+                     ", ", tags$code("POPULATION"), ", ", tags$code("META"),
+                     ", ", tags$code("SUPER"), ". These are optional and, when present, ",
+                     "expected to follow a loose hierarchy — ", tags$code("POP"),
+                     " → ", tags$code("META"), " → ", tags$code("SUPER"),
+                     " — from most to least granular (", tags$code("META"),
+                     " is typically a linguistic, ethnic, or subcontinental grouping; ",
+                     tags$code("SUPER"), " is typically continental-level). An optional ",
+                     tags$code("COLOR"),
                      " column (hex codes) overrides the auto palette when coloring by POP."),
               tags$pre(
-                "ID       POP   POP_SIMPLE   COUNTRY          SUPERPOP   CONTINENT\n",
-                "HG00096  GBR   British      United_Kingdom   EUR        Europe\n",
-                "HG00097  GBR   British      United_Kingdom   EUR        Europe\n",
-                "NA18525  CHB   Han          China            EAS        East_Asia"
+                "ID       POP   POPULATION   COUNTRY          SUPER   CONTINENT\n",
+                "HG00096  GBR   British      United_Kingdom   EUR     Europe\n",
+                "HG00097  GBR   British      United_Kingdom   EUR     Europe\n",
+                "NA18525  CHB   Han          China            EAS     East_Asia"
               )
           ),
 
