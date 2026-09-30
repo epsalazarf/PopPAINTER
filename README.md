@@ -10,6 +10,8 @@
 
 Additional visualization tools (e.g., a Circos-style genomic relationship plot) are planned for future versions.
 
+See [CHANGELOG.md](CHANGELOG.md) for release notes.
+
 ## About
 
 PopPAINTER apps allow users to:
