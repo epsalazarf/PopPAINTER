@@ -435,8 +435,8 @@ server <- function(input, output, session) {
         # output is centered near the origin, so a plot that renders
         # visibly off-center or squished against it is a sign something
         # is wrong upstream (e.g. running PCA where PCoA was needed).
-        geom_hline(yintercept = 0, color = "grey40", linewidth = 0.8) +
-        geom_vline(xintercept = 0, color = "grey40", linewidth = 0.8)
+        geom_hline(yintercept = 0, color = "gray75", linewidth = 0.5) +
+        geom_vline(xintercept = 0, color = "gray75", linewidth = 0.5)
 
       if (can_color) {
         p <- p +
@@ -530,8 +530,8 @@ server <- function(input, output, session) {
       # output is centered near the origin, so a plot that renders visibly
       # off-center or squished against it is a sign something is wrong
       # upstream (e.g. running PCA where PCoA was needed).
-      geom_hline(yintercept = 0, color = "grey40", linewidth = 0.8) +
-      geom_vline(xintercept = 0, color = "grey40", linewidth = 0.8) +
+      geom_hline(yintercept = 0, color = "gray75", linewidth = 0.5) +
+      geom_vline(xintercept = 0, color = "gray75", linewidth = 0.5) +
       # POINTS
       {if (input$type == 1) geom_point(size = 3, alpha = 0.6) } +
       # ID

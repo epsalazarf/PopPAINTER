@@ -40,3 +40,6 @@ common/
 # Ambiguous (may hold sample metadata) — review per-file before committing.
 # NOT auto-ignored because the demo popinfo is .tsv and must stay tracked:
 #   *.txt  *.tsv  *.csv
+
+# CLAUDE
+.claude
